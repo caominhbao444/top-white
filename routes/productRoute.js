@@ -10,8 +10,14 @@ router.post("/dangsanpham", (req, res) => {
   };
   res.status(201).json({ sanpham: sanpham });
 });
-router.get("/:id", (req, res) => {});
-router.patch("/:id", (req, res) => {});
-router.delete("/:id", (req, res) => {});
+router.get("/:id", (req, res) => {
+  res.send("Welcome to Top White");
+});
+router.patch("/:id", (req, res) => {
+  res.send("Welcome to Top White " + req.params.id);
+});
+router.delete("/:id", (req, res) => {
+  res.send("Delete " + req.params.id);
+});
 
 module.exports = router;
