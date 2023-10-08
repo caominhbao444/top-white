@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const connect = require("./database/database");
 const cors = require("cors");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
@@ -43,6 +44,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connect();
   console.log(`App listening on port ${PORT}`);
 });
