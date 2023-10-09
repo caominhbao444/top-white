@@ -11,26 +11,39 @@ const User = new Schema(
     email: {
       type: String,
       required: true,
-      validate: {
-        validator: (value) => isEmail,
-        message: "Email validation failed",
-      },
+      unique: true,
     },
     password: {
       type: String,
       required: true,
-      validate: {
-        validator: (value) => isStrongPassword,
-        message: "Password not strong",
-      },
     },
-    name: {
+    fullName: {
       type: String,
       required: true,
     },
-    phone: {
+    phoneNumber: {
       type: Number,
       required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    orderCount: {
+      type: Number,
+      default: 0,
+    },
+    acceptedCount: {
+      type: Number,
+      default: 0,
+    },
+    declinedCount: {
+      type: Number,
+      default: 0,
+    },
+    role: {
+      type: String,
+      default: "customer",
     },
   },
   {

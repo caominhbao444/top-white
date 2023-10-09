@@ -11,10 +11,6 @@ const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const orderRoute = require("./routes/orderRoute");
 
-// mongoose.connect(
-//   "mongodb+srv://minhbao11b3:Nkokpin123@cluster0.nivfc8b.mongodb.net/?retryWrites=true&w=majority"
-// );
-
 app.use(morgan("dev"));
 
 app.use(express.urlencoded({ extended: true }));
