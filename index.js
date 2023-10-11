@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+
+const cookieParser = require("cookie-parser");
 const connect = require("./database/database");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -7,6 +9,7 @@ const mongoose = require("mongoose");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const authRoute = require("./routes/authRoute");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const orderRoute = require("./routes/orderRoute");
@@ -19,8 +22,9 @@ app.use(express.json());
 //Help to read request body
 
 app.use(cors());
-
+app.use(cookieParser());
 //router
+app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/products", productRoute);
 app.use("/orders", orderRoute);
