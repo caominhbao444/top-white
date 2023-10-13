@@ -68,7 +68,7 @@ const authController = {
     try {
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        res
+        return res
           .status(HttpStatusCode.NOT_FOUND)
           .json({ message: "Email or password not invalid" });
       }
@@ -77,7 +77,7 @@ const authController = {
         user.password
       );
       if (!validPassword) {
-        res
+        return res
           .status(HttpStatusCode.NOT_FOUND)
           .json({ message: "Email or password not invalid" });
       }

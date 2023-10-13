@@ -9,13 +9,73 @@ const userController = {
   /////[GET] /users/manage-user/
   getListUsers: async (req, res) => {
     try {
+      const role = req.user.role;
+      if (role !== "admin") {
+        return res.status(403).json("You do not have permission to access!");
+      }
       const user = await User.find();
       res.status(HttpStatusCode.OK).json(user);
     } catch (error) {
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(error);
     }
   },
-  // //[DELETE] /users/manage-user/:id
+  //[POST] /users/manage-user/create
+  createUser: async (req, res) => {
+    try {
+      const { email, password, fullName, phoneNumber, address, role } =
+        req.body;
+      const existingUser = await User.findOne({ email }).exec();
+      if (existingUser) {
+        return res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "User already exits" });
+      }
+      const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
+      const hashPassword = await bcrypt.hash(password, salt);
+      //insert to db
+      const newUser = await User.create({
+        email,
+        password: hashPassword,
+        fullName,
+        phoneNumber,
+        address,
+        role,
+      });
+      res.status(201).send({
+        message: "Create successfully",
+        newUser,
+      });
+    } catch (error) {
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(error);
+    }
+  },
+  // //[GET] /users/:id
+  getUser: async (req, res) => {
+    try {
+      const user = await User.findById({ _id: req.params.id });
+      const { password, ...details } = user._doc;
+      res.status(HttpStatusCode.OK).json(details);
+    } catch (error) {
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(error);
+    }
+  },
+  // //[PATCH] /users/:id
+  updateUser: async (req, res) => {
+    try {
+      await User.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          fullName: req.body.fullName,
+          address: req.body.address,
+          phoneNumber: req.body.phoneNumber,
+        }
+      );
+      res.status(HttpStatusCode.OK).json("User updated successfully");
+    } catch (error) {
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(error);
+    }
+  },
+  // //[DELETE] /users/:id
   deleteUsers: async (req, res) => {
     try {
       const user = await User.findByIdAndDelete(req.params.id);
@@ -29,85 +89,3 @@ const userController = {
 };
 
 module.exports = userController;
-
-//[POST] /users/signup
-// const signUp = async (req, res, next) => {
-//   const errors = validationResult(req);
-//   if (errors.isEmpty()) {
-//     const { email, password, name, phone } = req.body;
-
-//     const existingUser = await User.findOne({ email }).exec();
-//     if (existingUser) {
-//       return res
-//         .status(HttpStatusCode.BAD_REQUEST)
-//         .json({ message: "User already exits" });
-//     }
-//     try {
-//       const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
-//       const hashPassword = await bcrypt.hash(password, salt);
-//       //insert to db
-//       const newUser = await User.create({
-//         email,
-//         password: hashPassword,
-//         name,
-//         phone,
-//       });
-//       res.status(201).send({
-//         message: "Create successfully",
-//         newUser,
-//       });
-//     } catch (error) {
-//       res.status(500).send({
-//         message: "Internal Server Error",
-//         error: error.message,
-//       });
-//     }
-//   } else {
-//     res.status(HttpStatusCode.BAD_REQUEST).json({ errors: errors.array() });
-//   }
-// };
-// //[POST] /users/signin
-// async function signIn(req, res) {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res
-//       .status(HttpStatusCode.BAD_REQUEST)
-//       .json({ errors: errors.array() });
-//   }
-//   const { email, password } = req.body;
-//   res.status(HttpStatusCode.OK).json({ message: "Login successful" });
-// }
-
-// //[GET] /users/:id
-// async function getUserById(req, res) {
-//   res.status(HttpStatusCode.OK).json({ message: "Thong tin nguoi dung" });
-// }
-
-// //[PATCH] /users/:id
-// async function updateUserById(req, res) {
-//   res
-//     .status(HttpStatusCode.OK)
-//     .json({ message: "Cap nhat thong tin nguoi dung" });
-// }
-
-// //[GET] /users/manage-user/
-// async function getListUsers(req, res) {
-//   res
-//     .status(HttpStatusCode.OK)
-//     .json({ message: "Danh sach thong tin nguoi dung" });
-// }
-
-// //[POST] /users/manage-user/create
-// async function createUsers(req, res) {
-//   res.status(HttpStatusCode.OK).json({ message: "Tao nguoi dung" });
-// }
-
-// module.exports = {
-//   signUp,
-//   signIn,
-//   getUserById,
-//   updateUserById,
-//   getListUsers,
-//   createUsers,
-//   deleteUsers,
-// };

@@ -13,14 +13,27 @@ const router = express.Router();
 // /////////////////////ADMIN///////////////////////////////////////////
 router.get(
   "/manage-user/",
-  middlewareController.verifyToken,
+  middlewareController.verifyTokenAdmin,
   userController.getListUsers
 );
-// router.post("/manage-user/create", createUsers);
-
+router.post(
+  "/manage-user/create",
+  middlewareController.verifyTokenAdmin,
+  userController.createUser
+);
+router.get(
+  "/:id",
+  middlewareController.verifyTokenOwnerAndAdmin,
+  userController.getUser
+);
+router.patch(
+  "/:id",
+  middlewareController.verifyTokenOwnerAndAdmin,
+  userController.updateUser
+);
 router.delete(
-  "/manage-user/:id",
-  middlewareController.verifyTokenAndAdmin,
+  "/:id",
+  middlewareController.verifyTokenOwnerAndAdmin,
   userController.deleteUsers
 );
 

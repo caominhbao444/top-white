@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const middlewareController = {
   //verifyToken
   verifyToken: (req, res, next) => {
-    const token = req.headers.token;
+    const token = req.headers["authorization"];
     if (token) {
       const accessToken = token.split(" ")[1];
       jwt.verify(accessToken, process.env.JWT_ACCESS_KEY, (err, user) => {
@@ -17,9 +17,18 @@ const middlewareController = {
       return res.status(401).json("You're not authorized to access");
     }
   },
-  verifyTokenAndAdmin: (req, res, next) => {
+  verifyTokenOwnerAndAdmin: (req, res, next) => {
     middlewareController.verifyToken(req, res, () => {
-      if (req.user._id === req.params.id || req.user.role === "admin") {
+      if (req.user.id === req.params.id || req.user.role === "admin") {
+        next();
+      } else {
+        res.status(403).json("You're not allowed to this");
+      }
+    });
+  },
+  verifyTokenAdmin: (req, res, next) => {
+    middlewareController.verifyToken(req, res, () => {
+      if (req.user.role === "admin") {
         next();
       } else {
         res.status(403).json("You're not allowed to this");

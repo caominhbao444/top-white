@@ -13,6 +13,7 @@ const authRoute = require("./routes/authRoute");
 const userRoute = require("./routes/userRoute");
 const productRoute = require("./routes/productRoute");
 const orderRoute = require("./routes/orderRoute");
+const categoryRoute = require("./routes/categoryRoute");
 
 app.use(morgan("dev"));
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 //router
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
+app.use("/categories", categoryRoute);
 app.use("/products", productRoute);
 app.use("/orders", orderRoute);
 
