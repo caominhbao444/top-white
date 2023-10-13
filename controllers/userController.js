@@ -6,15 +6,27 @@ const HttpStatusCode = require("../Exceptions/HttpStatusCode.js");
 const Exception = require("../Exceptions/Exception");
 
 const userController = {
-  /////[GET] /users/manage-user/
+  /////[GET] /users/manage-user?page=1&size=10
   getListUsers: async (req, res) => {
     try {
+      let { page = 1, size = 10 } = req.query;
+      size = size >= 10 ? 10 : size;
       const role = req.user.role;
       if (role !== "admin") {
         return res.status(403).json("You do not have permission to access!");
       }
-      const user = await User.find();
-      res.status(HttpStatusCode.OK).json(user);
+
+      page = parseInt(page);
+      size = parseInt(size);
+      const countPage = ((await User.find()).length % 10) + 1;
+      const user = await User.aggregate([
+        {
+          $match: {},
+        },
+        { $skip: (page - 1) * size },
+        { $limit: size },
+      ]);
+      res.status(HttpStatusCode.OK).json({ user, numberPage: countPage });
     } catch (error) {
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(error);
     }

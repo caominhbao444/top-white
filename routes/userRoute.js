@@ -12,7 +12,7 @@ const router = express.Router();
 // router.patch("/:id", updateUserById);
 // /////////////////////ADMIN///////////////////////////////////////////
 router.get(
-  "/manage-user/",
+  "/manage-user",
   middlewareController.verifyTokenAdmin,
   userController.getListUsers
 );
